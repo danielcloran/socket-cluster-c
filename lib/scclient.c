@@ -7,7 +7,7 @@
 #include <string.h>
 #include <unistd.h>
 
-#include <json/json.h>
+#include <json.h>
 #include <libwebsockets.h>
 
 #include "hashmap_string.c"
