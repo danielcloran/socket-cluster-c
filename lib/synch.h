@@ -8,8 +8,7 @@
 #ifndef __SYNCH_H__
 #define __SYNCH_H__
 
-typedef void * semaphore_t;
-
+typedef void *semaphore_t;
 
 semaphore_t semaphore_create();
 void semaphore_initialize(semaphore_t p_semaphore, int count);
@@ -18,4 +17,3 @@ void semaphore_V(semaphore_t p_semaphore);
 void semaphore_destroy(semaphore_t p_semaphore);
 
 #endif /* SYNCH_H_ */
-

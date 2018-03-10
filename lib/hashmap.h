@@ -4,8 +4,6 @@
 // #ifndef __HASHMAP_H__
 // #define __HASHMAP_H__
 
-
-
 /*
  * any_t is a pointer.  This allows you to put arbitrary structures in
  * the hashmap.
@@ -70,4 +68,4 @@ extern void map_free(map_t in);
  */
 extern int hashmap_length(map_t in);
 
-// #endif 
+// #endif

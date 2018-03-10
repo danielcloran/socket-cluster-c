@@ -9,10 +9,10 @@
 #ifndef __HASHMAP_H__
 #define __HASHMAP_H__
 
-#define MAP_MISSING -3  /* No such element */
-#define MAP_FULL -2 	/* Hashmap is full */
-#define MAP_OMEM -1 	/* Out of Memory */
-#define MAP_OK 0 	/* OK */
+#define MAP_MISSING -3 /* No such element */
+#define MAP_FULL -2    /* Hashmap is full */
+#define MAP_OMEM -1    /* Out of Memory */
+#define MAP_OK 0       /* OK */
 
 /*
  * any_t is a pointer.  This allows you to put arbitrary structures in
@@ -50,17 +50,17 @@ extern int _hashmap_iterate(map_t in, PFany f, any_t item);
 /*
  * Add an element to the hashmap. Return MAP_OK or MAP_OMEM.
  */
-extern int _hashmap_put(map_t in, char* key, any_t value);
+extern int _hashmap_put(map_t in, char *key, any_t value);
 
 /*
  * Get an element from the hashmap. Return MAP_OK or MAP_MISSING.
  */
-extern int _hashmap_get(map_t in, char* key, any_t *arg);
+extern int _hashmap_get(map_t in, char *key, any_t *arg);
 
 /*
  * Remove an element from the hashmap. Return MAP_OK or MAP_MISSING.
  */
-extern int _hashmap_remove(map_t in, char* key);
+extern int _hashmap_remove(map_t in, char *key);
 
 /*
  * Get any element. Return MAP_OK or MAP_MISSING.
@@ -78,4 +78,4 @@ extern void _hashmap_free(map_t in);
  */
 extern int _hashmap_length(map_t in);
 
-#endif 
+#endif
