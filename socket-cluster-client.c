@@ -16,6 +16,10 @@ void _pub_callback(char *channelname, json_object *error, json_object *data) {
 
 void sc_connect(struct socket *s) {
     printf("Successful connected.\n");
+}
+
+void handshake_over() {
+    printf("Successful handshake.\n");
     s->subscribe("topic");
 }
 
@@ -40,12 +44,13 @@ void on_message(char *channelname, json_object *data) {
 }
 
 int main() {
-    s                         = Socket("ws", "localhost", 8000, "/socketcluster/", NULL, -1);
-    s->connect_callback       = &sc_connect;
-    s->disconnect_callback    = &disconnect;
-    s->connect_error_callback = &connect_error;
-    s->onauth_callback        = &on_auth;
-    s->onauthtoken_callback   = &on_set_auth_token;
+    s                          = Socket("ws", "localhost", 8000, "/socketcluster/", NULL, -1);
+    s->connect_callback        = &sc_connect;
+    s->disconnect_callback     = &disconnect;
+    s->connect_error_callback  = &connect_error;
+    s->onauth_callback         = &on_auth;
+    s->onauthtoken_callback    = &on_set_auth_token;
+    s->handshake_over_callback = &handshake_over;
     s->on((char *)"rand", &on_message);
     s->onpublish("topic", &on_message);
     s->connect();

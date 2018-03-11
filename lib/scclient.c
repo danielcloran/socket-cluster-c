@@ -62,6 +62,8 @@ unsigned char **message_queue;
 int message_queue_len[max_message_queue];
 int message_queue_index = 0;
 
+int handshake_over_flag = 0; // complete socket cluster server handshake
+
 static void INT_HANDLER(int signo) {
     destroy_flag = 1;
 }
@@ -101,6 +103,9 @@ struct socket {
     void (*connect_error_callback)(struct socket *);
     void (*onauth_callback)(struct socket *, bool);
     void (*onauthtoken_callback)(struct socket *, char *token);
+
+    // handshake over callback
+    void (*handshake_over_callback)();
 
     // Declaring functions for sending and receiving events
     void (*emitint)(char *, int);
@@ -154,7 +159,7 @@ struct socket *Socket(char *protocol, char *address, int port, char *path, char 
     s->connect    = &socket_connect;
     s->disconnect = &socket_disconnect;
 
-    //Emitters and receivers goes here
+    // Emitters and receivers goes here
     s->emitint    = &_emit_int;
     s->emitstring = &_emit_string;
     s->emitobject = &_emit_object;
@@ -182,11 +187,12 @@ struct socket *Socket(char *protocol, char *address, int port, char *path, char 
     s->onpublish       = &_onpublish;
     s->allowselfsigned = &_allowselfsigned;
 
-    s->connect_callback       = NULL;
-    s->disconnect_callback    = NULL;
-    s->connect_error_callback = NULL;
-    s->onauth_callback        = NULL;
-    s->onauthtoken_callback   = NULL;
+    s->connect_callback        = NULL;
+    s->disconnect_callback     = NULL;
+    s->connect_error_callback  = NULL;
+    s->onauth_callback         = NULL;
+    s->onauthtoken_callback    = NULL;
+    s->handshake_over_callback = NULL;
 
     acks               = hashmap_new();
     singlecallbacks    = _hashmap_new();
@@ -260,6 +266,7 @@ static int ws_service_callback(struct lws *wsi, enum lws_callback_reasons reason
         if (s->connect_callback != NULL) {
             s->connect_callback(s);
         }
+        lws_callback_on_writable(wsi);
         connection_flag = 1;
     } break;
 
@@ -336,6 +343,7 @@ static int ws_service_callback(struct lws *wsi, enum lws_callback_reasons reason
                 break;
             }
             }
+            lws_callback_on_writable(wsi);
         }
     } break;
     case LWS_CALLBACK_CLIENT_WRITEABLE: {
@@ -345,8 +353,15 @@ static int ws_service_callback(struct lws *wsi, enum lws_callback_reasons reason
             printf(KGRN "[Main Service] On writeable is called, sent data length: %d.\n" RESET, message_queue_len[message_queue_index - 1]);
             if (publish_length != -1) {
                 message_queue_index--;
+                if (handshake_over_flag == 0) {
+                    handshake_over_flag = 1;
+                    if (s->handshake_over_callback != NULL) {
+                        s->handshake_over_callback();
+                    }
+                }
             }
         }
+        lws_callback_on_writable(wsi);
     } break;
     default:
         break;
