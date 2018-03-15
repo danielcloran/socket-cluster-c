@@ -1,5 +1,6 @@
 *.a
 *.o
 *.out
+*.test
 .DS_Store
 sftp-config.json
