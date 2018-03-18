@@ -20,7 +20,8 @@ void sc_connect(struct socket *s) {
 
 void handshake_over() {
     printf("Successful handshake.\n");
-    s->subscribe("topic");
+    s->subscribe("channel_status:11840");
+    s->publishstring("channel_status:11840", "happy new year 2018");
 }
 
 void disconnect(struct socket *s) {
@@ -44,7 +45,7 @@ void on_message(char *channelname, json_object *data) {
 }
 
 int main() {
-    s                          = Socket("ws", "localhost", 8000, "/socketcluster/", NULL, -1);
+    s                          = Socket("wss", "sbntest.supportu.info", 443, "/socketcluster/", NULL, -1);
     s->connect_callback        = &sc_connect;
     s->disconnect_callback     = &disconnect;
     s->connect_error_callback  = &connect_error;
@@ -52,6 +53,6 @@ int main() {
     s->onauthtoken_callback    = &on_set_auth_token;
     s->handshake_over_callback = &handshake_over;
     s->on((char *)"rand", &on_message);
-    s->onpublish("topic", &on_message);
+    s->onpublish("channel_status:11840", &on_message);
     s->connect();
 }

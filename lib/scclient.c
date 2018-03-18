@@ -57,10 +57,10 @@ struct sigaction act;
 int ietf_version = -1;
 int use_ssl      = 0;
 
-#define max_message_queue 65535
-unsigned char **message_queue;
-int message_queue_len[max_message_queue];
-int message_queue_index = 0;
+#define max_message_queue 65535           // wait for send message
+unsigned char **message_queue;            // message queue
+int message_queue_len[max_message_queue]; // the specified message length
+int message_queue_index = 0;              // message queue length
 
 int handshake_over_flag = 0; // complete socket cluster server handshake
 
@@ -153,7 +153,9 @@ struct socket *Socket(char *protocol, char *address, int port, char *path, char 
     s->proxy_port    = proxy_port;
 
     if (strcmp(protocol, "wss") == 0 || strcmp(protocol, "https") == 0) {
-        use_ssl = LCCSCF_USE_SSL;
+        use_ssl = LCCSCF_USE_SSL | LCCSCF_ALLOW_SELFSIGNED | LCCSCF_SKIP_SERVER_CERT_HOSTNAME_CHECK;
+    } else {
+        use_ssl = 0;
     }
 
     s->connect    = &socket_connect;
@@ -701,11 +703,10 @@ void socket_connect() {
     info.ssl_private_key_filepath = NULL;
     info.http_proxy_address       = s->proxy_address;
     info.http_proxy_port          = (unsigned int)s->proxy_port;
-    // info.extensions = lws_get_internal_extensions();
-    info.extensions = NULL;
-    info.gid        = -1;
-    info.uid        = -1;
-    info.options    = 0;
+    info.extensions               = exts;
+    info.gid                      = -1;
+    info.uid                      = -1;
+    info.options |= LWS_SERVER_OPTION_DO_SSL_GLOBAL_INIT;
 
     protocol.name                  = "websocket";
     protocol.callback              = &ws_service_callback;
@@ -727,7 +728,6 @@ void socket_connect() {
     i.origin                    = s->address;
     i.protocol                  = "websocket";
     i.ietf_version_or_minus_one = ietf_version;
-    i.client_exts               = exts;
 
     printf(KRED "[Main] context created.\n" RESET);
 

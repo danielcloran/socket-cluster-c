@@ -1,6 +1,7 @@
 #include <stdio.h>
 
 #include "../lib/scclient.c"
+
 void _connect(struct socket *s) {
     printf("\nsuccessfully connected");
 }
