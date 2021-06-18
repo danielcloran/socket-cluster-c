@@ -19,7 +19,7 @@ int main() {
     s->connect_callback       = &_connect;
     s->disconnect_callback    = &disconnect;
     s->connect_error_callback = &connect_error;
-    // s->ping_str               = (char *)"";
-    // s->pong_str               = (char *)"";
+    s->ping_str               = (char *)"";
+    s->pong_str               = (char *)"";
     s->connect();
 }
