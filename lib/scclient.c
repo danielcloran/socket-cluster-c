@@ -198,8 +198,8 @@ struct socket *Socket(char *protocol, char *address, int port, char *path, char 
     s->onauthtoken_callback    = NULL;
     s->handshake_over_callback = NULL;
 
-    s->ping_str = "#1";
-    s->pong_str = "#2";
+    s->ping_str = (char *)"#1";
+    s->pong_str = (char *)"#2";
 
     acks               = hashmap_new();
     singlecallbacks    = _hashmap_new();
@@ -295,12 +295,16 @@ static int ws_service_callback(struct lws *wsi, enum lws_callback_reasons reason
         if (strcmp((char *)in, s->ping_str) == 0) {
             websocket_write_back(wsi, s->pong_str, -1);
         } else {
-            printf(KGRN "[Main Service] Client recvived:%s\n" RESET, (char *)in);
+            printf(KGRN "[Main Service] Client received:%s\n" RESET, (char *)in);
             char *channel;
             json_object *data;
             bool isAuthenticated;
             struct recv_message *_recv = get_message_object();
             json_object *jobj          = json_tokener_parse((char *)in);
+            if (json_object_get_type(jobj) != json_type_object) {
+                printf(KRED "[Main Service] data received is either null or not json parsable.\n" RESET);
+                break;
+            }
             json_parse(jobj, _recv);
             enum parseresult result = parse(_recv);
             if (json_object_get_type(_recv->data) == json_type_object) {
