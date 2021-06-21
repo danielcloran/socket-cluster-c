@@ -702,7 +702,7 @@ void socket_connect() {
     act.sa_handler = INT_HANDLER;
     act.sa_flags   = 0;
     sigemptyset(&act.sa_mask);
-    sigaction(SIGINT, &act, 0);
+    sigaction(SIGINT, NULL, &act);
 
     memset(&info, 0, sizeof(info));
     info.port                     = CONTEXT_PORT_NO_LISTEN;
