@@ -8,12 +8,12 @@ int main() {
     int x     = 2;
     int error = hashmap_put(mymap, "sample", &x);
     if (error == MAP_OK) {
-        printf("\nNo error while putting");
+        //printf("\nNo error while putting");
     }
     int result;
     error = hashmap_get(mymap, "sample", (void **)(&result));
     if (error == MAP_OK) {
-        printf("\nNo error while getting");
+        //printf("\nNo error while getting");
     }
-    printf("result is %d", result);
+    //printf("result is %d", result);
 }
