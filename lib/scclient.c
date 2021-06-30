@@ -252,7 +252,7 @@ static int ws_service_callback(struct lws *wsi, enum lws_callback_reasons reason
     // printf(KRED "In Callback\n" RESET);
     switch (reason) {
     case LWS_CALLBACK_CLIENT_ESTABLISHED: {
-        printf(KYEL "[Main Service] Connect with server success.\n" RESET);
+        lwsl_notice("[Main Service] Connect with server success.\n");
         json_object *jobj       = json_object_new_object();
         json_object *event      = json_object_new_string("#handshake");
         json_object *authobject = json_object_new_object();
@@ -742,21 +742,21 @@ void socket_connect() {
     i.protocol                  = "websocket";
     i.ietf_version_or_minus_one = ietf_version;
 
-    printf(KRED "[Main] context created.\n" RESET);
+    lwsl_notice("[Main] context created.\n");
 
     if (context == NULL) {
-        printf(KRED "[Main] context is NULL.\n" RESET);
+        lwsl_notice("[Main] context is NULL.\n");
         return;
     }
 
     wsi = lws_client_connect_via_info(&i);
 
     if (wsi == NULL) {
-        printf(KRED "[Main] wsi create error.\n" RESET);
+        lwsl_notice("[Main] wsi create error.\n");
         return;
     }
     lws_callback_on_writable(wsi);
-    printf(KGRN "[Main] wsi create success.\n" RESET);
+    lwsl_notice("[Main] wsi create success.\n");
 
     while (!destroy_flag) {
         lws_service(context, 50);
