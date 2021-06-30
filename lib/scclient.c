@@ -296,7 +296,7 @@ static int ws_service_callback(struct lws *wsi, enum lws_callback_reasons reason
         if (strcmp((char *)in, s->ping_str) == 0) {
             websocket_write_back(wsi, s->pong_str, -1);
         } else {
-            printf(KGRN "[Main Service] Client received:%s\n" RESET, (char *)in);
+            // printf(KGRN "[Main Service] Client received:%s\n" RESET, (char *)in);
             char *channel;
             json_object *data;
             bool isAuthenticated;
@@ -362,7 +362,7 @@ static int ws_service_callback(struct lws *wsi, enum lws_callback_reasons reason
         int publish_length;
         if (message_queue_index != 0) {
             publish_length = lws_write(wsi, message_queue[message_queue_index - 1] + LWS_SEND_BUFFER_PRE_PADDING, message_queue_len[message_queue_index - 1], LWS_WRITE_TEXT);
-            printf(KGRN "[Main Service] On writeable is called, sent data length: %d.\n" RESET, message_queue_len[message_queue_index - 1]);
+            // printf(KGRN "[Main Service] On writeable is called, sent data length: %d.\n" RESET, message_queue_len[message_queue_index - 1]);
             if (publish_length != -1) {
                 message_queue_index--;
                 if (handshake_over_flag == 0) {
@@ -375,7 +375,7 @@ static int ws_service_callback(struct lws *wsi, enum lws_callback_reasons reason
         }
 
         lws_callback_on_writable(wsi);
-        usleep(100000);
+        usleep(10000);
 
     } break;
     default:
