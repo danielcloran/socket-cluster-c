@@ -23,3 +23,7 @@ int main() {
     s->pong_str               = (char *)"";
     s->connect();
 }
+
+/**
+g++ custom_ping_pong.c -o ping_pong -lwebsockets -ljson-c -lpthread -g
+*/
