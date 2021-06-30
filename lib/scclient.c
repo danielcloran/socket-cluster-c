@@ -280,14 +280,14 @@ static int ws_service_callback(struct lws *wsi, enum lws_callback_reasons reason
 
     case LWS_CALLBACK_CLIENT_CONNECTION_ERROR: {
         if (s->connect_error_callback != NULL) s->connect_error_callback(s);
-        printf(KRED "[Main Service] Connect with server error.\n" RESET);
+        lwsl_notice("[Main Service] Connect with server error.\n");
         destroy_flag    = 1;
         connection_flag = 0;
     } break;
 
     case LWS_CALLBACK_CLOSED: {
         if (s->disconnect_callback != NULL) s->disconnect_callback(s);
-        printf(KYEL "[Main Service] LWS_CALLBACK_CLOSED\n" RESET);
+        lwsl_notice("[Main Service] LWS_CALLBACK_CLOSED\n");
         destroy_flag    = 1;
         connection_flag = 0;
     } break;
@@ -303,7 +303,7 @@ static int ws_service_callback(struct lws *wsi, enum lws_callback_reasons reason
             struct recv_message *_recv = get_message_object();
             json_object *jobj          = json_tokener_parse((char *)in);
             if (json_object_get_type(jobj) != json_type_object) {
-                printf(KRED "[Main Service] data received is either null or not json parsable.\n" RESET);
+                lwsl_notice("[Main Service] data received is either null or not json parsable.\n");
                 break;
             }
             json_parse(jobj, _recv);
