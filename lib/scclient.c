@@ -249,7 +249,7 @@ struct ackdata *getackobject(char *name, int rid) {
 }
 
 static int ws_service_callback(struct lws *wsi, enum lws_callback_reasons reason, void *user, void *in, size_t len) {
-    printf(KRED "In Callback\n" RESET);
+    // printf(KRED "In Callback\n" RESET);
     switch (reason) {
     case LWS_CALLBACK_CLIENT_ESTABLISHED: {
         printf(KYEL "[Main Service] Connect with server success.\n" RESET);
@@ -375,7 +375,7 @@ static int ws_service_callback(struct lws *wsi, enum lws_callback_reasons reason
         }
 
         lws_callback_on_writable(wsi);
-        usleep(1000000);
+        usleep(100000);
 
     } break;
     default:
