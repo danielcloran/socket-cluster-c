@@ -706,7 +706,7 @@ void socket_reset() {
     destroy_flag = 0;
     counter = 0;
 
-    acks               = hashmap_new();
+    // acks               = hashmap_new();
     singlecallbacks    = _hashmap_new();
     singleackcallbacks = _hashmap_new();
     publishcallbacks   = _hashmap_new();
@@ -779,5 +779,8 @@ int socket_connect() {
         lws_service(context, 50);
     }
     lws_context_destroy(context);
+
+    free(info);
+    free(i);
     return 0;
 }
