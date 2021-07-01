@@ -746,6 +746,7 @@ int socket_connect() {
 
     if (context == NULL) {
         lwsl_notice("[Main] context is NULL.\n");
+        destroy_flag = 0;
         return 0;
     }
 
@@ -753,6 +754,7 @@ int socket_connect() {
 
     if (wsi == NULL) {
         lwsl_notice("[Main] wsi create error.\n");
+        destroy_flag = 0;
         return 0;
     }
     lws_callback_on_writable(wsi);
