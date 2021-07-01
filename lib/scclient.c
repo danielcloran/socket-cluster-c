@@ -699,6 +699,20 @@ void socket_disconnect() {
     free(s);
 }
 
+void socket_reset() {
+    connection_flag = 0;
+    destroy_flag = 0;
+
+    acks               = hashmap_new();
+    singlecallbacks    = _hashmap_new();
+    singleackcallbacks = _hashmap_new();
+    publishcallbacks   = _hashmap_new();
+
+    free(message_queue)
+    message_queue      = (unsigned char **)malloc(max_message_queue * sizeof(char *));
+    message_queue_index = 0;
+}
+
 int socket_connect() {
     context = NULL;
     wsi     = NULL;
@@ -746,7 +760,6 @@ int socket_connect() {
 
     if (context == NULL) {
         lwsl_notice("[Main] context is NULL.\n");
-        destroy_flag = 0;
         return 0;
     }
 
@@ -754,7 +767,6 @@ int socket_connect() {
 
     if (wsi == NULL) {
         lwsl_notice("[Main] wsi create error.\n");
-        destroy_flag = 0;
         return 0;
     }
     lws_callback_on_writable(wsi);
@@ -764,6 +776,5 @@ int socket_connect() {
         lws_service(context, 50);
     }
     lws_context_destroy(context);
-    destroy_flag = 0;
     return 0;
 }
