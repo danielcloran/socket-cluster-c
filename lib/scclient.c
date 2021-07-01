@@ -704,6 +704,7 @@ void socket_reset() {
 
     connection_flag = 0;
     destroy_flag = 0;
+    counter = 0;
 
     acks               = hashmap_new();
     singlecallbacks    = _hashmap_new();
