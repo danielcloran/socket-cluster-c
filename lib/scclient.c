@@ -708,7 +708,7 @@ void socket_reset() {
     singleackcallbacks = _hashmap_new();
     publishcallbacks   = _hashmap_new();
 
-    free(message_queue)
+    free(message_queue);
     message_queue      = (unsigned char **)malloc(max_message_queue * sizeof(char *));
     message_queue_index = 0;
 }
