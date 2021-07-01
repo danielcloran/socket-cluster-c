@@ -303,7 +303,7 @@ static int ws_service_callback(struct lws *wsi, enum lws_callback_reasons reason
             struct recv_message *_recv = get_message_object();
             json_object *jobj          = json_tokener_parse((char *)in);
             if (json_object_get_type(jobj) != json_type_object) {
-                lwsl_notice("[Main Service] data received is either null or not json parsable.\n");
+                // lwsl_notice("[Main Service] data received is either null or not json parsable.\n");
                 break;
             }
             json_parse(jobj, _recv);
