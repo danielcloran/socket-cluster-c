@@ -95,7 +95,7 @@ struct socket {
     int proxy_port;
     char *ping_str;
     char *pong_str;
-    void (*connect)();
+    int (*connect)();
     void (*disconnect)();
 
     // Declaring function pointers to set of callbacks
@@ -699,7 +699,7 @@ void socket_disconnect() {
     free(s);
 }
 
-void socket_connect() {
+int socket_connect() {
     context = NULL;
     wsi     = NULL;
 
@@ -746,14 +746,14 @@ void socket_connect() {
 
     if (context == NULL) {
         lwsl_notice("[Main] context is NULL.\n");
-        return;
+        return 0;
     }
 
     wsi = lws_client_connect_via_info(&i);
 
     if (wsi == NULL) {
         lwsl_notice("[Main] wsi create error.\n");
-        return;
+        return 0;
     }
     lws_callback_on_writable(wsi);
     lwsl_notice("[Main] wsi create success.\n");
@@ -762,5 +762,6 @@ void socket_connect() {
         lws_service(context, 50);
     }
     lws_context_destroy(context);
-    return;
+    destroy_flag = 0;
+    return 0;
 }
