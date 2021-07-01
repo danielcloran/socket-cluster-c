@@ -700,6 +700,8 @@ void socket_disconnect() {
 }
 
 void socket_reset() {
+    lwsl_notice("[main] resetting socket server");
+
     connection_flag = 0;
     destroy_flag = 0;
 
