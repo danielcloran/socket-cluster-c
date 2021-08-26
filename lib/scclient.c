@@ -707,6 +707,10 @@ void socket_reset() {
     counter = 0;
     handshake_over_flag = 0;
 
+    free(singlecallbacks);
+    free(singleackcallbacks);
+    free(publishcallbacks);
+
     // acks               = hashmap_new();
     singlecallbacks    = _hashmap_new();
     singleackcallbacks = _hashmap_new();
