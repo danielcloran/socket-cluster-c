@@ -67,7 +67,7 @@ unsigned char **message_queue;            // message queue
 int message_queue_len[max_message_queue]; // the specified message length
 int mallocCounter = 0;
 int message_queue_malloc[max_message_queue]; // the specified message length
-int message_queue_index = 0;                 // message queue length
+int message_queue_index = 0;              // message queue length
 
 int handshake_over_flag = 0; // complete socket cluster server handshake
 
@@ -242,11 +242,11 @@ static void websocket_write_back(struct lws *wsi_in, char *str, int str_size_in)
     else
         len = str_size_in;
 
-    message_queue_len[message_queue_index]    = len;
+    message_queue_len[message_queue_index] = len;
     message_queue_malloc[message_queue_index] = 1;
     mallocCounter++;
     printf("MALLOC COUNTER: %d mallocing: %d bytes\n", mallocCounter, (LWS_SEND_BUFFER_PRE_PADDING + len + LWS_SEND_BUFFER_POST_PADDING));
-    message_queue[message_queue_index] = (unsigned char *)malloc(sizeof(unsigned char) * (LWS_SEND_BUFFER_PRE_PADDING + len + LWS_SEND_BUFFER_POST_PADDING));
+    message_queue[message_queue_index]     = (unsigned char *)malloc(sizeof(unsigned char) * (LWS_SEND_BUFFER_PRE_PADDING + len + LWS_SEND_BUFFER_POST_PADDING));
     memcpy(message_queue[message_queue_index] + LWS_SEND_BUFFER_PRE_PADDING, str, len);
     message_queue_index++;
     return;
@@ -393,7 +393,7 @@ static int ws_service_callback(struct lws *wsi, enum lws_callback_reasons reason
         }
 
         lws_callback_on_writable(wsi);
-        usleep(10000);
+        usleep(1000);
 
     } break;
     default:
@@ -405,6 +405,7 @@ static int ws_service_callback(struct lws *wsi, enum lws_callback_reasons reason
 
 static void *pthread_routine(void *data) {
     websocket_write_back(wsi, (char *)data, -1);
+
 }
 
 void _emit_int(char *event, int data) {
@@ -602,8 +603,11 @@ void _publishobject(char *channelname, json_object *data) {
     json_object_object_add(jobj, "data", jobj1);
     json_object_object_add(jobj, "cid", cnt);
 
-    printf("in publish object\n");
-    pthread_routine((char *)json_object_to_json_string(jobj));
+    printf("in publish object")
+
+    pthread_t pid;
+    pthread_create(&pid, NULL, pthread_routine, (char *)json_object_to_json_string(jobj));
+    pthread_join(pid, NULL);
 
     json_object_put(jobj);
 }
