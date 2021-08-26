@@ -584,10 +584,16 @@ void _publishobject(char *channelname, json_object *data) {
     json_object_object_add(jobj, "data", jobj1);
     json_object_object_add(jobj, "cid", cnt);
 
-    pthread_t pid;
-    pthread_create(&pid, NULL, pthread_routine, (char *)json_object_to_json_string(jobj));
-    pthread_join(pid, NULL);
-    free(pid);
+    pthread_attr_t attr;
+    pthread_t thread;
+    pthread_attr_init(&attr);
+    pthread_attr_setdetachstate(&attr, 1);
+    pthread_create(&thread, &attr, &pthread_routine, (char *)json_object_to_json_string(jobj));
+    pthread_attr_destroy(&attr);
+
+    // pthread_t pid;
+    // pthread_create(&pid, NULL, pthread_routine, );
+    // pthread_join(pid, NULL);
 
     json_object_put(jobj);
 }
@@ -705,9 +711,9 @@ void socket_disconnect() {
 void socket_reset() {
     lwsl_notice("[main] resetting socket server variables.");
 
-    connection_flag = 0;
-    destroy_flag = 0;
-    counter = 0;
+    connection_flag     = 0;
+    destroy_flag        = 0;
+    counter             = 0;
     handshake_over_flag = 0;
 
     free(singlecallbacks);
@@ -720,7 +726,7 @@ void socket_reset() {
     publishcallbacks   = _hashmap_new();
 
     free(message_queue);
-    message_queue      = (unsigned char **)malloc(max_message_queue * sizeof(char *));
+    message_queue       = (unsigned char **)malloc(max_message_queue * sizeof(char *));
     message_queue_index = 0;
 }
 
