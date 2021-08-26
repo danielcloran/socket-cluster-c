@@ -371,6 +371,7 @@ static int ws_service_callback(struct lws *wsi, enum lws_callback_reasons reason
     } break;
     case LWS_CALLBACK_CLIENT_WRITEABLE: {
         if (message_queue_index != 0) {
+            message_queue_index--;
             int publish_length;
             publish_length = lws_write(wsi, message_queue[message_queue_index - 1] + LWS_SEND_BUFFER_PRE_PADDING, message_queue_len[message_queue_index - 1], LWS_WRITE_TEXT);
             printf(KGRN "[Main Service] On writeable is called, sent data length: %d.\n" RESET, message_queue_len[message_queue_index - 1]);
@@ -382,7 +383,6 @@ static int ws_service_callback(struct lws *wsi, enum lws_callback_reasons reason
                     free(message_queue[message_queue_index - 1]);
                 }
 
-                message_queue_index--;
                 if (handshake_over_flag == 0) {
                     handshake_over_flag = 1;
                     if (s->handshake_over_callback != NULL) {
