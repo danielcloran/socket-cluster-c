@@ -234,10 +234,10 @@ static void websocket_write_back(struct lws *wsi_in, char *str, int str_size_in)
     else
         len = str_size_in;
 
-    message_queue_len[message_queue_index] = len;
-    message_queue[message_queue_index]     = (unsigned char *)malloc(sizeof(unsigned char) * (LWS_SEND_BUFFER_PRE_PADDING + len + LWS_SEND_BUFFER_POST_PADDING));
-    memcpy(message_queue[message_queue_index] + LWS_SEND_BUFFER_PRE_PADDING, str, len);
-    message_queue_index++;
+    // message_queue_len[message_queue_index] = len;
+    // message_queue[message_queue_index]     = (unsigned char *)malloc(sizeof(unsigned char) * (LWS_SEND_BUFFER_PRE_PADDING + len + LWS_SEND_BUFFER_POST_PADDING));
+    // memcpy(message_queue[message_queue_index] + LWS_SEND_BUFFER_PRE_PADDING, str, len);
+    // message_queue_index++;
     return;
 }
 
@@ -387,7 +387,6 @@ static int ws_service_callback(struct lws *wsi, enum lws_callback_reasons reason
 
 static void *pthread_routine(void *data) {
     websocket_write_back(wsi, (char *)data, -1);
-    free(data);
 }
 
 void _emit_int(char *event, int data) {
