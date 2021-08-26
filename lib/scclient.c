@@ -234,10 +234,10 @@ static void websocket_write_back(struct lws *wsi_in, char *str, int str_size_in)
     else
         len = str_size_in;
 
-    // message_queue_len[message_queue_index] = len;
-    // message_queue[message_queue_index]     = (unsigned char *)malloc(sizeof(unsigned char) * (LWS_SEND_BUFFER_PRE_PADDING + len + LWS_SEND_BUFFER_POST_PADDING));
-    // memcpy(message_queue[message_queue_index] + LWS_SEND_BUFFER_PRE_PADDING, str, len);
-    // message_queue_index++;
+    message_queue_len[message_queue_index] = len;
+    message_queue[message_queue_index]     = (unsigned char *)malloc(sizeof(unsigned char) * (LWS_SEND_BUFFER_PRE_PADDING + len + LWS_SEND_BUFFER_POST_PADDING));
+    memcpy(message_queue[message_queue_index] + LWS_SEND_BUFFER_PRE_PADDING, str, len);
+    message_queue_index++;
     return;
 }
 
@@ -359,10 +359,11 @@ static int ws_service_callback(struct lws *wsi, enum lws_callback_reasons reason
         }
     } break;
     case LWS_CALLBACK_CLIENT_WRITEABLE: {
-        int publish_length;
         if (message_queue_index != 0) {
+            int publish_length;
             publish_length = lws_write(wsi, message_queue[message_queue_index - 1] + LWS_SEND_BUFFER_PRE_PADDING, message_queue_len[message_queue_index - 1], LWS_WRITE_TEXT);
             // printf(KGRN "[Main Service] On writeable is called, sent data length: %d.\n" RESET, message_queue_len[message_queue_index - 1]);
+            free(message_queue[message_queue_index - 1]);
             if (publish_length != -1) {
                 message_queue_index--;
                 if (handshake_over_flag == 0) {
@@ -583,13 +584,6 @@ void _publishobject(char *channelname, json_object *data) {
     json_object_object_add(jobj, "event", eventobject);
     json_object_object_add(jobj, "data", jobj1);
     json_object_object_add(jobj, "cid", cnt);
-
-    // pthread_attr_t attr;
-    // pthread_t thread;
-    // pthread_attr_init(&attr);
-    // pthread_attr_setdetachstate(&attr, 1);
-    // pthread_create(&thread, &attr, &pthread_routine, );
-    // pthread_attr_destroy(&attr);
 
     pthread_t pid;
     pthread_create(&pid, NULL, pthread_routine, (char *)json_object_to_json_string(jobj));
