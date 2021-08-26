@@ -586,7 +586,7 @@ void _publishobject(char *channelname, json_object *data) {
     pthread_t pid;
     pthread_create(&pid, NULL, pthread_routine, (char *)json_object_to_json_string(jobj));
     pthread_join(pid, NULL);
-    free(jobj);
+    json_object_put(jobj);
 }
 
 void _publishint_ack(char *channelname, int data, void (*f)(char *event, json_object *error, json_object *data)) {
