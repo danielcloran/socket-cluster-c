@@ -224,6 +224,7 @@ struct wait_send_data {
 };
 
 static void websocket_write_back(struct lws *wsi_in, char *str, int str_size_in) {
+    printf("Boutta write: %s\n", str);
     if (str == NULL || wsi_in == NULL)
         return;
 
@@ -362,7 +363,7 @@ static int ws_service_callback(struct lws *wsi, enum lws_callback_reasons reason
         if (message_queue_index != 0) {
             int publish_length;
             publish_length = lws_write(wsi, message_queue[message_queue_index - 1] + LWS_SEND_BUFFER_PRE_PADDING, message_queue_len[message_queue_index - 1], LWS_WRITE_TEXT);
-            printf(KGRN "[Main Service] On writeable is called, sent data length: %d. data: %s\n" RESET, message_queue_len[message_queue_index - 1], message_queue[message_queue_index - 1] + LWS_SEND_BUFFER_PRE_PADDING);
+            printf(KGRN "[Main Service] On writeable is called, sent data length: %d.\n" RESET, message_queue_len[message_queue_index - 1]);
             if (publish_length != -1) {
                 if (message_queue_len[message_queue_index - 1] > 100) {
                     free(message_queue[message_queue_index - 1]);
@@ -391,6 +392,7 @@ static int ws_service_callback(struct lws *wsi, enum lws_callback_reasons reason
 
 static void *pthread_routine(void *data) {
     websocket_write_back(wsi, (char *)data, -1);
+
 }
 
 void _emit_int(char *event, int data) {
