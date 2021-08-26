@@ -65,6 +65,7 @@ int use_ssl      = 0;
 #define max_message_queue 65535           // wait for send message
 unsigned char **message_queue;            // message queue
 int message_queue_len[max_message_queue]; // the specified message length
+int mallocCounter = 0;
 int message_queue_malloc[max_message_queue]; // the specified message length
 int message_queue_index = 0;              // message queue length
 
@@ -243,7 +244,8 @@ static void websocket_write_back(struct lws *wsi_in, char *str, int str_size_in)
 
     message_queue_len[message_queue_index] = len;
     message_queue_malloc[message_queue_index] = 1;
-    printf("mallocing: %d bytes\n", (LWS_SEND_BUFFER_PRE_PADDING + len + LWS_SEND_BUFFER_POST_PADDING));
+    mallocCounter++;
+    printf("MALLOC COUNTER: %d mallocing: %d bytes\n", mallocCounter, (LWS_SEND_BUFFER_PRE_PADDING + len + LWS_SEND_BUFFER_POST_PADDING));
     message_queue[message_queue_index]     = (unsigned char *)malloc(sizeof(unsigned char) * (LWS_SEND_BUFFER_PRE_PADDING + len + LWS_SEND_BUFFER_POST_PADDING));
     memcpy(message_queue[message_queue_index] + LWS_SEND_BUFFER_PRE_PADDING, str, len);
     message_queue_index++;
@@ -374,7 +376,8 @@ static int ws_service_callback(struct lws *wsi, enum lws_callback_reasons reason
             printf(KGRN "[Main Service] On writeable is called, sent data length: %d.\n" RESET, message_queue_len[message_queue_index - 1]);
             if (publish_length != -1) {
                 if (message_queue_malloc[message_queue_index - 1] == 1) {
-                    printf("Boutta free\n");
+                    mallocCounter--;
+                    printf("Boutta free, MALLOC COUNTER: %d\n", mallocCounter);
                     message_queue_malloc[message_queue_index - 1] = 0;
                     free(message_queue[message_queue_index - 1]);
                 }
