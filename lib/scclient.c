@@ -603,17 +603,7 @@ void _publishobject(char *channelname, json_object *data) {
     json_object_object_add(jobj, "cid", cnt);
 
     printf("in publish object\n");
-
-    pthread_attr_t attr;
-    pthread_t thread;
-    pthread_attr_init(&attr);
-    pthread_attr_setdetachstate(&attr, 1);
-    pthread_create(&thread, &attr, &pthread_routine, (char *)json_object_to_json_string(jobj));
-    pthread_attr_destroy(&attr);
-
-    // pthread_t pid;
-    // pthread_create(&pid, NULL, pthread_routine, );
-    // pthread_join(pid, NULL);
+    pthread_routine((char *)json_object_to_json_string(jobj))
 
     json_object_put(jobj);
 }
