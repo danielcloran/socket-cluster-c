@@ -362,9 +362,13 @@ static int ws_service_callback(struct lws *wsi, enum lws_callback_reasons reason
         if (message_queue_index != 0) {
             int publish_length;
             publish_length = lws_write(wsi, message_queue[message_queue_index - 1] + LWS_SEND_BUFFER_PRE_PADDING, message_queue_len[message_queue_index - 1], LWS_WRITE_TEXT);
-            // printf(KGRN "[Main Service] On writeable is called, sent data length: %d.\n" RESET, message_queue_len[message_queue_index - 1]);
+            printf(KGRN "[Main Service] On writeable is called, sent data length: %d.\n" RESET, message_queue_len[message_queue_index - 1]);
             if (publish_length != -1) {
-                printf("About to free: %s \n", message_queue[message_queue_index - 1]);
+                // printf("Message length: %d", message_queue_len[message_queue_index - 1]);
+
+                // if ()
+                // free(message_queue[message_queue_index - 1]);
+                // printf("About to free: %s \n", message_queue[message_queue_index - 1]);
 
                 message_queue_index--;
                 if (handshake_over_flag == 0) {
