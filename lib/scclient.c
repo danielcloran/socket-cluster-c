@@ -364,8 +364,8 @@ static int ws_service_callback(struct lws *wsi, enum lws_callback_reasons reason
             publish_length = lws_write(wsi, message_queue[message_queue_index - 1] + LWS_SEND_BUFFER_PRE_PADDING, message_queue_len[message_queue_index - 1], LWS_WRITE_TEXT);
             // printf(KGRN "[Main Service] On writeable is called, sent data length: %d.\n" RESET, message_queue_len[message_queue_index - 1]);
             if (publish_length != -1) {
-                if (malloc_size(message_queue[message_queue_index - 1]) > 0) {
-                    printf("FREEING: %d bytes", malloc_size(message_queue[message_queue_index - 1]));
+                if (message_queue_len[message_queue_index - 1] > 0) {
+                    printf("FREEING: %d bytes", message_queue_len[message_queue_index - 1]);
                     free(message_queue[message_queue_index - 1]);
                 }
                 message_queue_index--;
