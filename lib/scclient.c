@@ -253,7 +253,7 @@ static void websocket_write_back(struct lws *wsi_in, char *str, int str_size_in)
         printf("pointer: %p\n", void(*) message_queue[index]);
         printf("Message #%d malloc: %d\n", index, message_queue_malloc[index]);
         printf("Message #%d text: %s\n", index, str);
-        printf("\n")
+        printf("\n");
     }
     printf("\n\n\nNEXT ITER");
     return;
