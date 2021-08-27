@@ -244,8 +244,7 @@ static void websocket_write_back(struct lws *wsi_in, char *str, int str_size_in)
 
     message_queue_len[message_queue_index] = len;
     message_queue_malloc[message_queue_index] = 1;
-    mallocCounter++;
-    printf("MALLOC COUNTER: %d mallocing: %d bytes\n", mallocCounter, (LWS_SEND_BUFFER_PRE_PADDING + len + LWS_SEND_BUFFER_POST_PADDING));
+    printf("mallocing: %d bytes\n", (LWS_SEND_BUFFER_PRE_PADDING + len + LWS_SEND_BUFFER_POST_PADDING));
     message_queue[message_queue_index]     = (unsigned char *)malloc(sizeof(unsigned char) * (LWS_SEND_BUFFER_PRE_PADDING + len + LWS_SEND_BUFFER_POST_PADDING));
     memcpy(message_queue[message_queue_index] + LWS_SEND_BUFFER_PRE_PADDING, str, len);
     message_queue_index++;
@@ -377,8 +376,6 @@ static int ws_service_callback(struct lws *wsi, enum lws_callback_reasons reason
             printf(KGRN "[Main Service] On writeable is called, sent data length: %d.\n" RESET, message_queue_len[message_queue_index - 1]);
             if (publish_length != -1) {
                 if (message_queue_malloc[message_queue_index - 1] == 1) {
-                    mallocCounter--;
-                    printf("Boutta free, MALLOC COUNTER: %d\n", mallocCounter);
                     message_queue_malloc[message_queue_index - 1] = 0;
                     free(message_queue[message_queue_index - 1]);
                 }
