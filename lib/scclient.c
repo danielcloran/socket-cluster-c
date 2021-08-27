@@ -255,7 +255,7 @@ static void websocket_write_back(struct lws *wsi_in, char *str, int str_size_in)
         printf("Message #%d text: %s\n", index, message_queue[index] + LWS_SEND_BUFFER_PRE_PADDING);
         printf("\n");
     }
-    printf("\n\n\nNEXT ITER");
+    printf("\n\n\nNEXT ITER\n");
     return;
 }
 
