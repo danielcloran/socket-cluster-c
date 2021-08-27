@@ -402,7 +402,7 @@ static int ws_service_callback(struct lws *wsi, enum lws_callback_reasons reason
 }
 
 static void *pthread_routine(void *data) {
-    // websocket_write_back(wsi, (char *)data, -1);
+    websocket_write_back(wsi, (char *)data, -1);
 }
 
 void _emit_int(char *event, int data) {
