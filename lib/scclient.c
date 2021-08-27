@@ -231,9 +231,10 @@ struct wait_send_data {
 };
 
 static void websocket_write_back(struct lws *wsi_in, char *str, int str_size_in) {
-    printf("Boutta write: %s\n", str);
     if (str == NULL || wsi_in == NULL)
         return;
+
+    printf("Boutta write: %s\n", str);
 
     int len = 0;
 
