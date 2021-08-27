@@ -241,7 +241,7 @@ static void websocket_write_back(struct lws *wsi_in, char *str, int str_size_in)
     else
         len = str_size_in;
 
-    if (len > 0) return;
+    // if (len > 0) return;
 
     message_queue_len[message_queue_index]    = len;
     message_queue_malloc[message_queue_index] = 1;
