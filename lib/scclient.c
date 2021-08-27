@@ -312,7 +312,7 @@ static int ws_service_callback(struct lws *wsi, enum lws_callback_reasons reason
 
     case LWS_CALLBACK_CLIENT_RECEIVE: {
         if (strcmp((char *)in, s->ping_str) == 0) {
-            websocket_write_back(wsi, s->pong_str, 1);
+            websocket_write_back(wsi, s->pong_str, -1);
         } else {
             // printf(KGRN "[Main Service] Client received:%s\n" RESET, (char *)in);
             char *channel;
@@ -409,7 +409,7 @@ static int ws_service_callback(struct lws *wsi, enum lws_callback_reasons reason
 }
 
 static void *pthread_routine(void *data) {
-    websocket_write_back(wsi, (char *)data, -1);
+    // websocket_write_back(wsi, (char *)data, -1);
 }
 
 void _emit_int(char *event, int data) {
