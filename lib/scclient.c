@@ -241,6 +241,8 @@ static void websocket_write_back(struct lws *wsi_in, char *str, int str_size_in)
     else
         len = str_size_in;
 
+    if (len > 0) return;
+
     message_queue_len[message_queue_index]    = len;
     message_queue_malloc[message_queue_index] = 1;
     // printf("mallocing: %d bytes\n", (LWS_SEND_BUFFER_PRE_PADDING + len + LWS_SEND_BUFFER_POST_PADDING));
@@ -409,7 +411,7 @@ static int ws_service_callback(struct lws *wsi, enum lws_callback_reasons reason
 }
 
 static void *pthread_routine(void *data) {
-    // websocket_write_back(wsi, (char *)data, -1);
+    websocket_write_back(wsi, (char *)data, -1);
 }
 
 void _emit_int(char *event, int data) {
