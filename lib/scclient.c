@@ -390,7 +390,7 @@ static int ws_service_callback(struct lws *wsi, enum lws_callback_reasons reason
         }
 
         lws_callback_on_writable(wsi);
-        usleep(10000);
+        usleep(1000);
 
     } break;
     default:
@@ -600,8 +600,7 @@ void _publishobject(char *channelname, json_object *data) {
     json_object_object_add(jobj, "cid", cnt);
 
     pthread_t pid;
-    //json_object_to_json_string(jobj)
-    pthread_create(&pid, NULL, pthread_routine, (char *)"TestString123123123123123TestString123123123123123TestString123123123123123TestString123123123123123TestString123123123123123");
+    pthread_create(&pid, NULL, pthread_routine, (char *)json_object_to_json_string(jobj));
     pthread_join(pid, NULL);
 
     json_object_put(jobj);
