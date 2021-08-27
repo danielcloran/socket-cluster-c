@@ -400,7 +400,7 @@ static int ws_service_callback(struct lws *wsi, enum lws_callback_reasons reason
         }
 
         lws_callback_on_writable(wsi);
-        usleep(100000);
+        usleep(10000);
 
     } break;
     default:
