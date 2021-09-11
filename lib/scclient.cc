@@ -356,6 +356,7 @@ static int ws_service_callback(struct lws *wsi, enum lws_callback_reasons reason
         }
     } break;
     case LWS_CALLBACK_CLIENT_WRITEABLE: {
+        printf("Shipping it!");
         std::string message = message_queue->dequeue();
         if (message != "empty") {
             unsigned char *writable = new unsigned char[LWS_SEND_BUFFER_PRE_PADDING + message.size() + LWS_SEND_BUFFER_POST_PADDING];
