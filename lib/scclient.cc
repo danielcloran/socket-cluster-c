@@ -380,27 +380,17 @@ static int ws_service_callback(struct lws *wsi, enum lws_callback_reasons reason
         }
     } break;
     case LWS_CALLBACK_CLIENT_WRITEABLE: {
-
         std::string message = message_queue->dequeue();
         if (message != "empty") {
             std::cout << "Message: " << message << std::endl;
-            unsigned char *writable = new unsigned char[LWS_SEND_BUFFER_PRE_PADDING + message.size() + LWS_SEND_BUFFER_POST_PADDING];
+            unsigned char *writable = new unsigned char[LWS_SEND_BUFFER_PRE_PADDING + message.size() + 1 + LWS_SEND_BUFFER_POST_PADDING];
             std::copy(message.begin(), message.end(), writable + LWS_SEND_BUFFER_PRE_PADDING);
             std::cout << "Writeable: " << writable << std::endl;
-
-            // writable[message.size()] = '\0'; // don't forget the terminating 0
+            writable[message.size()] = '\0'; // don't forget the terminating 0
 
             int publish_length = lws_write(wsi, writable + LWS_SEND_BUFFER_PRE_PADDING, message.size(), LWS_WRITE_TEXT);
-            std::cout << "Publish_length: " << publish_length << std::endl;
+            // std::cout << "Publish_length: " << publish_length << std::endl;
             free(writable);
-            // printf(KGRN "[Main Service] On writeable is called, sent data length: %d.\n" RESET, message_queue_len[message_queue_index - 1]);
-            // if (publish_length != -1) {
-            //     message_queue_index--;
-
-            //     if (message_queue_malloc[message_queue_index - 1] == 1) {
-            //         message_queue_malloc[message_queue_index - 1] = 0;
-            //         free(message_queue[message_queue_index - 1]);
-            //     }
 
             if (handshake_over_flag == 0) {
                 handshake_over_flag = 1;
