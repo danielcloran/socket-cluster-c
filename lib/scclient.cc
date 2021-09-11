@@ -10,9 +10,9 @@
 #include <safequeue.h>
 
 // CPP imports for cleaner messageQueue
-// #include <stdlib.h>
+#include <stdlib.h>
 // #include <list>
-// #include <string>
+#include <string>
 
 #include <json/json.h>
 #include <libwebsockets.h>
@@ -65,7 +65,7 @@ int ietf_version = -1;
 int use_ssl      = 0;
 
 #define max_message_queue 65535           // wait for send message
-SAFE_QUEUE::SafeQueue<unsigned char *> *message_queue; // message queue
+SAFE_QUEUE::SafeQueue<std::string> *message_queue; // message queue
 int number_of_messages = 0;
 
 
@@ -151,7 +151,7 @@ struct socket {
 } * s;
 
 struct socket *Socket(char *protocol, char *address, int port, char *path, char *proxy_address, int proxy_port) {
-    message_queue    = new SAFE_QUEUE::SafeQueue<unsigned char *>();
+    message_queue    = new SAFE_QUEUE::SafeQueue<std::string>();
     // (unsigned char **)malloc(max_message_queue * sizeof(char *));
     s                = (struct socket *)malloc(sizeof(struct socket));
     s->id            = NULL;
@@ -235,25 +235,28 @@ static void websocket_write_back(struct lws *wsi_in, char *str, int str_size_in)
     if (str == NULL || wsi_in == NULL)
         return;
 
-    int len = 0;
+    // int len = 0;
 
-    if (str_size_in < 1)
-        len = strlen(str);
-    else
-        len = str_size_in;
+    // if (str_size_in < 1)
+    //     len = strlen(str);
+    // else
+    //     len = str_size_in;
 
     // if (len > 0) return;
-    int mallocsize = LWS_SEND_BUFFER_PRE_PADDING + len + LWS_SEND_BUFFER_POST_PADDING;
-    printf("Mallocing: %d bytes\n", mallocsize);
-    unsigned char * temp = (unsigned char *)malloc(sizeof(unsigned char) * (LWS_SEND_BUFFER_PRE_PADDING + len + LWS_SEND_BUFFER_POST_PADDING));
-    memcpy(temp + LWS_SEND_BUFFER_PRE_PADDING, str, len);
-    // number_of_messages += 1;
-    message_queue->enqueue(temp);
 
-    // unsigned char * tem = message_queue->dequeue();
-    int size = strlen((char*)temp + LWS_SEND_BUFFER_PRE_PADDING);
-    printf("Message Intended Size: %d\n", len);
-    printf("Message size:%d text: %s\n", size, temp + LWS_SEND_BUFFER_PRE_PADDING);
+    // int mallocsize = LWS_SEND_BUFFER_PRE_PADDING + len + LWS_SEND_BUFFER_POST_PADDING;
+    message_queue->enqueue(str);
+
+    // printf("Mallocing: %d bytes\n", mallocsize);
+    // unsigned char * temp = (unsigned char *)malloc(sizeof(unsigned char) * (LWS_SEND_BUFFER_PRE_PADDING + len + LWS_SEND_BUFFER_POST_PADDING));
+    // memcpy(temp + LWS_SEND_BUFFER_PRE_PADDING, str, len);
+    // // number_of_messages += 1;
+    // message_queue->enqueue(temp);
+
+    // // unsigned char * tem = message_queue->dequeue();
+    // int size = strlen((unsigned char*)temp + LWS_SEND_BUFFER_PRE_PADDING);
+    // printf("Message Intended Size: %d\n", len);
+    // printf("Message size:%d text: %s\n", size, temp + LWS_SEND_BUFFER_PRE_PADDING);
 
     return;
 }
@@ -376,9 +379,12 @@ static int ws_service_callback(struct lws *wsi, enum lws_callback_reasons reason
         }
     } break;
     case LWS_CALLBACK_CLIENT_WRITEABLE: {
-        unsigned char *message = message_queue->dequeue();
-        int size = strlen((char*)message) - LWS_SEND_BUFFER_PRE_PADDING - LWS_SEND_BUFFER_POST_PADDING;
-        int publish_length = lws_write(wsi, message + LWS_SEND_BUFFER_PRE_PADDING, size, LWS_WRITE_TEXT);
+        std::string message = message_queue->dequeue();
+        char *writable = new unsigned char[LWS_SEND_BUFFER_PRE_PADDING + message.size() + 1 + LWS_SEND_BUFFER_POST_PADDING];
+        std::copy(message.begin(), message.end(), writable);
+        writable[cppString.size()] = '\0'; // don't forget the terminating 0
+
+        int publish_length = lws_write(wsi, writable + LWS_SEND_BUFFER_PRE_PADDING, message.size(), LWS_WRITE_TEXT);
             // printf(KGRN "[Main Service] On writeable is called, sent data length: %d.\n" RESET, message_queue_len[message_queue_index - 1]);
             // if (publish_length != -1) {
             //     message_queue_index--;
