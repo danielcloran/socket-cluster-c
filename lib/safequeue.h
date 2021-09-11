@@ -27,11 +27,12 @@ public:
     T dequeue(void)
     {
         std::unique_lock<std::mutex> lock(m);
-        while (q.empty())
-        {
-            // release lock as long as the wait and reaquire it afterwards.
-            c.wait(lock);
-        }
+        if (q.empty()) return "empty";
+        // while (q.empty())
+        // {
+        //     // release lock as long as the wait and reaquire it afterwards.
+        //     c.wait(lock);
+        // }
         T val = q.front();
         q.pop();
         return val;

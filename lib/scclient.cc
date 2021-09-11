@@ -65,10 +65,9 @@ struct sigaction act;
 int ietf_version = -1;
 int use_ssl      = 0;
 
-#define max_message_queue 65535           // wait for send message
+#define max_message_queue 65535                    // wait for send message
 SAFE_QUEUE::SafeQueue<std::string> *message_queue; // message queue
 int number_of_messages = 0;
-
 
 int handshake_over_flag = 0; // complete socket cluster server handshake
 
@@ -152,7 +151,7 @@ struct socket {
 } * s;
 
 struct socket *Socket(char *protocol, char *address, int port, char *path, char *proxy_address, int proxy_port) {
-    message_queue    = new SAFE_QUEUE::SafeQueue<std::string>();
+    message_queue = new SAFE_QUEUE::SafeQueue<std::string>();
     // (unsigned char **)malloc(max_message_queue * sizeof(char *));
     s                = (struct socket *)malloc(sizeof(struct socket));
     s->id            = NULL;
@@ -383,16 +382,17 @@ static int ws_service_callback(struct lws *wsi, enum lws_callback_reasons reason
     case LWS_CALLBACK_CLIENT_WRITEABLE: {
 
         std::string message = message_queue->dequeue();
-        std::cout << "Message: " << message << std::endl;
-        unsigned char *writable = new unsigned char[LWS_SEND_BUFFER_PRE_PADDING + message.size() + LWS_SEND_BUFFER_POST_PADDING];
-        std::copy(message.begin(), message.end(), writable + LWS_SEND_BUFFER_PRE_PADDING);
-        std::cout << "Writeable: " << writable << std::endl;
+        if (message != "empty") {
+            std::cout << "Message: " << message << std::endl;
+            unsigned char *writable = new unsigned char[LWS_SEND_BUFFER_PRE_PADDING + message.size() + LWS_SEND_BUFFER_POST_PADDING];
+            std::copy(message.begin(), message.end(), writable + LWS_SEND_BUFFER_PRE_PADDING);
+            std::cout << "Writeable: " << writable << std::endl;
 
-        // writable[message.size()] = '\0'; // don't forget the terminating 0
+            // writable[message.size()] = '\0'; // don't forget the terminating 0
 
-        int publish_length = lws_write(wsi, writable + LWS_SEND_BUFFER_PRE_PADDING, message.size(), LWS_WRITE_TEXT);
-        std::cout << "Publish_length: " << publish_length << std::endl;
-        free(writable);
+            int publish_length = lws_write(wsi, writable + LWS_SEND_BUFFER_PRE_PADDING, message.size(), LWS_WRITE_TEXT);
+            std::cout << "Publish_length: " << publish_length << std::endl;
+            free(writable);
             // printf(KGRN "[Main Service] On writeable is called, sent data length: %d.\n" RESET, message_queue_len[message_queue_index - 1]);
             // if (publish_length != -1) {
             //     message_queue_index--;
@@ -409,9 +409,10 @@ static int ws_service_callback(struct lws *wsi, enum lws_callback_reasons reason
                 }
             }
             // }
-        // }
-
+            // }
+        }
         lws_callback_on_writable(wsi);
+        usleep(10000);
     } break;
     default:
         break;
