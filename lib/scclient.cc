@@ -12,6 +12,7 @@
 // CPP imports for cleaner messageQueue
 #include <stdlib.h>
 // #include <list>
+#include <iostream>
 #include <string>
 
 #include <json/json.h>
@@ -246,6 +247,7 @@ static void websocket_write_back(struct lws *wsi_in, char *str, int str_size_in)
 
     // int mallocsize = LWS_SEND_BUFFER_PRE_PADDING + len + LWS_SEND_BUFFER_POST_PADDING;
     message_queue->enqueue(str);
+    std::cout << "Message: " << str << std::endl;
 
     // printf("Mallocing: %d bytes\n", mallocsize);
     // unsigned char * temp = (unsigned char *)malloc(sizeof(unsigned char) * (LWS_SEND_BUFFER_PRE_PADDING + len + LWS_SEND_BUFFER_POST_PADDING));
