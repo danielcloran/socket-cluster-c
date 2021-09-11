@@ -380,9 +380,9 @@ static int ws_service_callback(struct lws *wsi, enum lws_callback_reasons reason
     } break;
     case LWS_CALLBACK_CLIENT_WRITEABLE: {
         std::string message = message_queue->dequeue();
-        char *writable = new unsigned char[LWS_SEND_BUFFER_PRE_PADDING + message.size() + 1 + LWS_SEND_BUFFER_POST_PADDING];
+        unsigned char *writable = new unsigned char[LWS_SEND_BUFFER_PRE_PADDING + message.size() + 1 + LWS_SEND_BUFFER_POST_PADDING];
         std::copy(message.begin(), message.end(), writable);
-        writable[cppString.size()] = '\0'; // don't forget the terminating 0
+        writable[message.size()] = '\0'; // don't forget the terminating 0
 
         int publish_length = lws_write(wsi, writable + LWS_SEND_BUFFER_PRE_PADDING, message.size(), LWS_WRITE_TEXT);
             // printf(KGRN "[Main Service] On writeable is called, sent data length: %d.\n" RESET, message_queue_len[message_queue_index - 1]);
