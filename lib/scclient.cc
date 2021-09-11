@@ -236,7 +236,6 @@ static void websocket_write_back(struct lws *wsi_in, char *str, int str_size_in)
     if (str == NULL || wsi_in == NULL)
         return;
     message_queue->enqueue(str);
-    free(str);
 }
 
 struct ackdata *getackobject(char *name, int rid) {
