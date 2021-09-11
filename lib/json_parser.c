@@ -22,6 +22,8 @@ void print_json_value(json_object *jobj) {
         printf("json_type_stringn");
         printf("          value: %sn", json_object_get_string(jobj));
         break;
+    default:
+        break;
     }
 }
 
