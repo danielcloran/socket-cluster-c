@@ -246,7 +246,7 @@ static void websocket_write_back(struct lws *wsi_in, char *str, int str_size_in)
     unsigned char * temp = (unsigned char *)malloc(sizeof(unsigned char) * (LWS_SEND_BUFFER_PRE_PADDING + len + LWS_SEND_BUFFER_POST_PADDING));
     memcpy(temp + LWS_SEND_BUFFER_PRE_PADDING, str, len);
     // number_of_messages += 1;
-    message_queue.enqueue(temp);
+    message_queue->enqueue(temp);
 
     // message_queue_len[message_queue_index]    = len;
     // message_queue_malloc[message_queue_index] = 1;
@@ -384,7 +384,7 @@ static int ws_service_callback(struct lws *wsi, enum lws_callback_reasons reason
         }
     } break;
     case LWS_CALLBACK_CLIENT_WRITEABLE: {
-        unsigned char *message = message_queue.dequeue()
+        unsigned char *message = message_queue->dequeue()
         int size = strlen((char*)message) - LWS_SEND_BUFFER_PRE_PADDING - LWS_SEND_BUFFER_POST_PADDING;
         int publish_length = lws_write(wsi, message + LWS_SEND_BUFFER_PRE_PADDING, size, LWS_WRITE_TEXT);
             // printf(KGRN "[Main Service] On writeable is called, sent data length: %d.\n" RESET, message_queue_len[message_queue_index - 1]);
