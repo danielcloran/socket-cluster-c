@@ -387,7 +387,8 @@ static int ws_service_callback(struct lws *wsi, enum lws_callback_reasons reason
         writable[message.size()] = '\0'; // don't forget the terminating 0
 
         int publish_length = lws_write(wsi, writable + LWS_SEND_BUFFER_PRE_PADDING, message.size(), LWS_WRITE_TEXT);
-        printf("Publish_length: %d", publish_length);
+        std::cout << "Publish_length: " << publish_length << std::endl;
+        free(writable);
             // printf(KGRN "[Main Service] On writeable is called, sent data length: %d.\n" RESET, message_queue_len[message_queue_index - 1]);
             // if (publish_length != -1) {
             //     message_queue_index--;
@@ -397,17 +398,16 @@ static int ws_service_callback(struct lws *wsi, enum lws_callback_reasons reason
             //         free(message_queue[message_queue_index - 1]);
             //     }
 
-            //     if (handshake_over_flag == 0) {
-            //         handshake_over_flag = 1;
-            //         if (s->handshake_over_callback != NULL) {
-            //             s->handshake_over_callback();
-            //         }
-            //     }
+            if (handshake_over_flag == 0) {
+                handshake_over_flag = 1;
+                if (s->handshake_over_callback != NULL) {
+                    s->handshake_over_callback();
+                }
+            }
             // }
         // }
 
         lws_callback_on_writable(wsi);
-        usleep(10000);
 
     } break;
     default:
