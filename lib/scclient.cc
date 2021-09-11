@@ -384,9 +384,10 @@ static int ws_service_callback(struct lws *wsi, enum lws_callback_reasons reason
 
         std::string message = message_queue->dequeue();
         std::cout << "Message: " << message << std::endl;
-        if (!message.empty()) {
         unsigned char *writable = new unsigned char[LWS_SEND_BUFFER_PRE_PADDING + message.size() + LWS_SEND_BUFFER_POST_PADDING];
         std::copy(message.begin(), message.end(), writable);
+        std::cout << "Writeable: " << writable << std::endl;
+
         // writable[message.size()] = '\0'; // don't forget the terminating 0
 
         int publish_length = lws_write(wsi, writable + LWS_SEND_BUFFER_PRE_PADDING, message.size(), LWS_WRITE_TEXT);
@@ -409,11 +410,6 @@ static int ws_service_callback(struct lws *wsi, enum lws_callback_reasons reason
             }
             // }
         // }
-        }
-        else
-        {
-            std::cout << "Empty str written" << std::endl;
-        }
 
         lws_callback_on_writable(wsi);
         usleep(10000);
