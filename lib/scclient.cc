@@ -244,14 +244,14 @@ static void websocket_write_back(struct lws *wsi_in, char *str, int str_size_in)
 
     // if (len > 0) return;
     int mallocsize = LWS_SEND_BUFFER_PRE_PADDING + len + LWS_SEND_BUFFER_POST_PADDING;
-    printf("Mallocing: %d bytes", mallocsize);
+    printf("Mallocing: %d bytes\n", mallocsize);
     unsigned char * temp = (unsigned char *)malloc(sizeof(unsigned char) * (LWS_SEND_BUFFER_PRE_PADDING + len + LWS_SEND_BUFFER_POST_PADDING));
     memcpy(temp + LWS_SEND_BUFFER_PRE_PADDING, str, len);
     // number_of_messages += 1;
     message_queue->enqueue(temp);
 
     // unsigned char * tem = message_queue->dequeue();
-    int size = strlen((char*)temp) - LWS_SEND_BUFFER_PRE_PADDING - LWS_SEND_BUFFER_POST_PADDING;
+    int size = strlen((char*)temp + LWS_SEND_BUFFER_PRE_PADDING);
     printf("Message Intended Size: %d\n", len);
     printf("Message size:%d text: %s\n", size, temp + LWS_SEND_BUFFER_PRE_PADDING);
 
