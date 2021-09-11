@@ -152,7 +152,6 @@ struct socket {
 
 struct socket *Socket(char *protocol, char *address, int port, char *path, char *proxy_address, int proxy_port) {
     message_queue = new SAFE_QUEUE::SafeQueue<std::string>();
-    // (unsigned char **)malloc(max_message_queue * sizeof(char *));
     s                = (struct socket *)malloc(sizeof(struct socket));
     s->id            = NULL;
     s->address       = address;
@@ -234,32 +233,7 @@ struct wait_send_data {
 static void websocket_write_back(struct lws *wsi_in, char *str, int str_size_in) {
     if (str == NULL || wsi_in == NULL)
         return;
-
-    // int len = 0;
-
-    // if (str_size_in < 1)
-    //     len = strlen(str);
-    // else
-    //     len = str_size_in;
-
-    // if (len > 0) return;
-
-    // int mallocsize = LWS_SEND_BUFFER_PRE_PADDING + len + LWS_SEND_BUFFER_POST_PADDING;
     message_queue->enqueue(str);
-    std::cout << "Message: " << str << std::endl;
-
-    // printf("Mallocing: %d bytes\n", mallocsize);
-    // unsigned char * temp = (unsigned char *)malloc(sizeof(unsigned char) * (LWS_SEND_BUFFER_PRE_PADDING + len + LWS_SEND_BUFFER_POST_PADDING));
-    // memcpy(temp + LWS_SEND_BUFFER_PRE_PADDING, str, len);
-    // // number_of_messages += 1;
-    // message_queue->enqueue(temp);
-
-    // // unsigned char * tem = message_queue->dequeue();
-    // int size = strlen((unsigned char*)temp + LWS_SEND_BUFFER_PRE_PADDING);
-    // printf("Message Intended Size: %d\n", len);
-    // printf("Message size:%d text: %s\n", size, temp + LWS_SEND_BUFFER_PRE_PADDING);
-
-    return;
 }
 
 struct ackdata *getackobject(char *name, int rid) {
@@ -382,14 +356,9 @@ static int ws_service_callback(struct lws *wsi, enum lws_callback_reasons reason
     case LWS_CALLBACK_CLIENT_WRITEABLE: {
         std::string message = message_queue->dequeue();
         if (message != "empty") {
-            std::cout << "Message: " << message << std::endl;
-            unsigned char *writable = new unsigned char[LWS_SEND_BUFFER_PRE_PADDING + message.size() + 1 + LWS_SEND_BUFFER_POST_PADDING];
+            unsigned char *writable = new unsigned char[LWS_SEND_BUFFER_PRE_PADDING + message.size() + LWS_SEND_BUFFER_POST_PADDING];
             std::copy(message.begin(), message.end(), writable + LWS_SEND_BUFFER_PRE_PADDING);
-            std::cout << "Writeable: " << writable << std::endl;
-            writable[message.size()] = '\0'; // don't forget the terminating 0
-
             int publish_length = lws_write(wsi, writable + LWS_SEND_BUFFER_PRE_PADDING, message.size(), LWS_WRITE_TEXT);
-            // std::cout << "Publish_length: " << publish_length << std::endl;
             free(writable);
 
             if (handshake_over_flag == 0) {
@@ -398,11 +367,9 @@ static int ws_service_callback(struct lws *wsi, enum lws_callback_reasons reason
                     s->handshake_over_callback();
                 }
             }
-            // }
-            // }
         }
         lws_callback_on_writable(wsi);
-        usleep(10000);
+        usleep(1000);
     } break;
     default:
         break;
