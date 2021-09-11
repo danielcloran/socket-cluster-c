@@ -65,7 +65,7 @@ int ietf_version = -1;
 int use_ssl      = 0;
 
 #define max_message_queue 65535           // wait for send message
-SAFE_QUEUE::SafeQueue<unsigned char *> message_queue; // message queue
+SAFE_QUEUE::SafeQueue<unsigned char *> *message_queue; // message queue
 int number_of_messages = 0;
 
 
