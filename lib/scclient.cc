@@ -236,6 +236,7 @@ static void websocket_write_back(struct lws *wsi_in, char *str, int str_size_in)
     if (str == NULL || wsi_in == NULL)
         return;
     message_queue->enqueue(str);
+    free(str);
 }
 
 struct ackdata *getackobject(char *name, int rid) {
@@ -359,10 +360,10 @@ static int ws_service_callback(struct lws *wsi, enum lws_callback_reasons reason
         std::cout << "Shipping it!" << std::endl;
         std::string message = message_queue->dequeue();
         if (message != "empty") {
-            unsigned char *writable = new unsigned char[LWS_SEND_BUFFER_PRE_PADDING + message.size() + LWS_SEND_BUFFER_POST_PADDING];
-            std::copy(message.begin(), message.end(), writable + LWS_SEND_BUFFER_PRE_PADDING);
-            int publish_length = lws_write(wsi, writable + LWS_SEND_BUFFER_PRE_PADDING, message.size(), LWS_WRITE_TEXT);
-            free(writable);
+            // unsigned char *writable = new unsigned char[LWS_SEND_BUFFER_PRE_PADDING + message.size() + LWS_SEND_BUFFER_POST_PADDING];
+            // std::copy(message.begin(), message.end(), writable + LWS_SEND_BUFFER_PRE_PADDING);
+            // int publish_length = lws_write(wsi, writable + LWS_SEND_BUFFER_PRE_PADDING, message.size(), LWS_WRITE_TEXT);
+            // free(writable);
 
             if (handshake_over_flag == 0) {
                 handshake_over_flag = 1;
