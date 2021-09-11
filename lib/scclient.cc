@@ -247,7 +247,7 @@ static void websocket_write_back(struct lws *wsi_in, char *str, int str_size_in)
     memcpy(temp + LWS_SEND_BUFFER_PRE_PADDING, str, len);
     // number_of_messages += 1;
     message_queue->enqueue(temp);
-    int size = strlen((char*)temp) - LWS_SEND_BUFFER_PRE_PADDING - LWS_SEND_BUFFER_POST_PADDING;
+    int size = strlen((char*)temp) - LWS_SEND_BUFFER_PRE_PADDING;
     printf("Message size:%d text: %s\n", size, temp + LWS_SEND_BUFFER_PRE_PADDING);
 
 
