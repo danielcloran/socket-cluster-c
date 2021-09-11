@@ -37,6 +37,17 @@ public:
         q.pop();
         return val;
     }
+
+    int wait_until_value(void)
+    {
+        std::unique_lock<std::mutex> lock(m);
+        while (q.empty())
+        {
+            // release lock as long as the wait and reaquire it afterwards.
+            c.wait(lock);
+        }
+        return true;
+    }
 private:
     std::queue<T> q;
     mutable std::mutex m;

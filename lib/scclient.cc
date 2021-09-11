@@ -23,6 +23,7 @@
 #include "hashmap.c"
 
 #include "scclient.h"
+#include <thread>
 
 #include "json_parser.c"
 #include "parser.c"
@@ -67,6 +68,7 @@ int use_ssl      = 0;
 
 #define max_message_queue 65535                    // wait for send message
 SAFE_QUEUE::SafeQueue<std::string> *message_queue; // message queue
+std::thread message_thread;
 int number_of_messages = 0;
 
 int handshake_over_flag = 0; // complete socket cluster server handshake
@@ -368,8 +370,8 @@ static int ws_service_callback(struct lws *wsi, enum lws_callback_reasons reason
                 }
             }
         }
-        lws_callback_on_writable(wsi);
-        usleep(10000);
+        // lws_callback_on_writable(wsi);
+        // usleep(10000);
     } break;
     default:
         break;
@@ -711,10 +713,13 @@ void socket_reset() {
     singlecallbacks    = _hashmap_new();
     singleackcallbacks = _hashmap_new();
     publishcallbacks   = _hashmap_new();
+}
 
-    // free(message_queue);
-    // message_queue       = (unsigned char **)malloc(max_message_queue * sizeof(char *));
-    // message_queue_index = 0;
+void message_processing() {
+    while (!destroy_flag) {
+        message_queue->wait_until_value();
+        lws_callback_on_writable(wsi);
+    }
 }
 
 int socket_connect() {
@@ -773,7 +778,8 @@ int socket_connect() {
         lwsl_notice("[Main] wsi create error.\n");
         return 0;
     }
-    lws_callback_on_writable(wsi);
+    message_thread = std::thread(&message_processing);
+    // lws_callback_on_writable(wsi);
     lwsl_notice("[Main] wsi create success.\n");
 
     while (!destroy_flag) {
