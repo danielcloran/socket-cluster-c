@@ -383,6 +383,7 @@ static int ws_service_callback(struct lws *wsi, enum lws_callback_reasons reason
     case LWS_CALLBACK_CLIENT_WRITEABLE: {
 
         std::string message = message_queue->dequeue();
+        std::cout << "Message: " << message << std::endl;
         if (!message.empty()) {
         unsigned char *writable = new unsigned char[LWS_SEND_BUFFER_PRE_PADDING + message.size() + LWS_SEND_BUFFER_POST_PADDING];
         std::copy(message.begin(), message.end(), writable);
