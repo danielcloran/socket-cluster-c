@@ -7,6 +7,8 @@
 #include <string.h>
 #include <unistd.h>
 
+#include <safequeue.h>
+
 // CPP imports for cleaner messageQueue
 // #include <stdlib.h>
 // #include <list>
@@ -63,11 +65,9 @@ int ietf_version = -1;
 int use_ssl      = 0;
 
 #define max_message_queue 65535           // wait for send message
-unsigned char **message_queue;            // message queue
-int message_queue_len[max_message_queue]; // the specified message length
-int mallocCounter = 0;
-int message_queue_malloc[max_message_queue]; // the specified message length
-int message_queue_index = 0;                 // message queue length
+SAFE_QUEUE::SafeQueue<unsigned char *> message_queue; // message queue
+int number_of_messages = 0;
+
 
 int handshake_over_flag = 0; // complete socket cluster server handshake
 
@@ -151,7 +151,8 @@ struct socket {
 } * s;
 
 struct socket *Socket(char *protocol, char *address, int port, char *path, char *proxy_address, int proxy_port) {
-    message_queue    = (unsigned char **)malloc(max_message_queue * sizeof(char *));
+    message_queue    = new SAFE_QUEUE::SafeQueue<unsigned char *>();
+    // (unsigned char **)malloc(max_message_queue * sizeof(char *));
     s                = (struct socket *)malloc(sizeof(struct socket));
     s->id            = NULL;
     s->address       = address;
@@ -242,13 +243,17 @@ static void websocket_write_back(struct lws *wsi_in, char *str, int str_size_in)
         len = str_size_in;
 
     // if (len > 0) return;
+    unsigned char * temp = (unsigned char *)malloc(sizeof(unsigned char) * (LWS_SEND_BUFFER_PRE_PADDING + len + LWS_SEND_BUFFER_POST_PADDING));
+    memcpy(temp + LWS_SEND_BUFFER_PRE_PADDING, str, len);
+    // number_of_messages += 1;
+    message_queue.enqueue(temp);
 
-    message_queue_len[message_queue_index]    = len;
-    message_queue_malloc[message_queue_index] = 1;
-    // printf("mallocing: %d bytes\n", (LWS_SEND_BUFFER_PRE_PADDING + len + LWS_SEND_BUFFER_POST_PADDING));
-    message_queue[message_queue_index] = (unsigned char *)malloc(sizeof(unsigned char) * (LWS_SEND_BUFFER_PRE_PADDING + len + LWS_SEND_BUFFER_POST_PADDING));
-    memcpy(message_queue[message_queue_index] + LWS_SEND_BUFFER_PRE_PADDING, str, len);
-    message_queue_index++;
+    // message_queue_len[message_queue_index]    = len;
+    // message_queue_malloc[message_queue_index] = 1;
+    // // printf("mallocing: %d bytes\n", (LWS_SEND_BUFFER_PRE_PADDING + len + LWS_SEND_BUFFER_POST_PADDING));
+    // message_queue[message_queue_index] = (unsigned char *)malloc(sizeof(unsigned char) * (LWS_SEND_BUFFER_PRE_PADDING + len + LWS_SEND_BUFFER_POST_PADDING));
+    // memcpy(message_queue[message_queue_index] + LWS_SEND_BUFFER_PRE_PADDING, str, len);
+    // message_queue_index++;
 
     // for (int index = 0; index < message_queue_index; index++) {
     //     printf("Message #%d length: %d  ", index, message_queue_len[index]);
@@ -379,24 +384,25 @@ static int ws_service_callback(struct lws *wsi, enum lws_callback_reasons reason
         }
     } break;
     case LWS_CALLBACK_CLIENT_WRITEABLE: {
-        if (message_queue_index != 0) {
-            int publish_length = lws_write(wsi, message_queue[message_queue_index - 1] + LWS_SEND_BUFFER_PRE_PADDING, message_queue_len[message_queue_index - 1], LWS_WRITE_TEXT);
+        unsigned char *message = message_queue.dequeue()
+        int size = strlen((char*)message) - LWS_SEND_BUFFER_PRE_PADDING - LWS_SEND_BUFFER_POST_PADDING;
+        int publish_length = lws_write(wsi, message + LWS_SEND_BUFFER_PRE_PADDING, size, LWS_WRITE_TEXT);
             // printf(KGRN "[Main Service] On writeable is called, sent data length: %d.\n" RESET, message_queue_len[message_queue_index - 1]);
-            if (publish_length != -1) {
-                message_queue_index--;
+            // if (publish_length != -1) {
+            //     message_queue_index--;
 
-                if (message_queue_malloc[message_queue_index - 1] == 1) {
-                    message_queue_malloc[message_queue_index - 1] = 0;
-                    free(message_queue[message_queue_index - 1]);
-                }
+            //     if (message_queue_malloc[message_queue_index - 1] == 1) {
+            //         message_queue_malloc[message_queue_index - 1] = 0;
+            //         free(message_queue[message_queue_index - 1]);
+            //     }
 
-                if (handshake_over_flag == 0) {
-                    handshake_over_flag = 1;
-                    if (s->handshake_over_callback != NULL) {
-                        s->handshake_over_callback();
-                    }
-                }
-            }
+            //     if (handshake_over_flag == 0) {
+            //         handshake_over_flag = 1;
+            //         if (s->handshake_over_callback != NULL) {
+            //             s->handshake_over_callback();
+            //         }
+            //     }
+            // }
         }
 
         lws_callback_on_writable(wsi);
