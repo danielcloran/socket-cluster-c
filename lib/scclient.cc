@@ -719,13 +719,13 @@ void socket_reset() {
 
 void fake_write() {
     std::string message = message_queue->dequeue();
-    if (message != "empty") {
-        unsigned char *writable = (unsigned char *)malloc(sizeof(unsigned char) * (LWS_SEND_BUFFER_PRE_PADDING + message.size() + LWS_SEND_BUFFER_POST_PADDING));
-        new unsigned char[LWS_SEND_BUFFER_PRE_PADDING + message.size() + LWS_SEND_BUFFER_POST_PADDING];
-        std::copy(message.begin(), message.end(), writable + LWS_SEND_BUFFER_PRE_PADDING);
-        // int publish_length = lws_write(wsi, writable + LWS_SEND_BUFFER_PRE_PADDING, message.size(), LWS_WRITE_TEXT);
-        free(writable);
-    }
+    // if (message != "empty") {
+    //     unsigned char *writable = (unsigned char *)malloc(sizeof(unsigned char) * (LWS_SEND_BUFFER_PRE_PADDING + message.size() + LWS_SEND_BUFFER_POST_PADDING));
+    //     new unsigned char[LWS_SEND_BUFFER_PRE_PADDING + message.size() + LWS_SEND_BUFFER_POST_PADDING];
+    //     std::copy(message.begin(), message.end(), writable + LWS_SEND_BUFFER_PRE_PADDING);
+    //     // int publish_length = lws_write(wsi, writable + LWS_SEND_BUFFER_PRE_PADDING, message.size(), LWS_WRITE_TEXT);
+    //     free(writable);
+    // }
 }
 
 void message_processing() {
