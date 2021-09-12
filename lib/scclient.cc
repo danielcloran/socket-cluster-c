@@ -719,6 +719,14 @@ void socket_reset() {
 
 void fake_write() {
     std::string message = message_queue->dequeue();
+    char * out = (char *)malloc(sizeof(char)*(LWS_SEND_BUFFER_PRE_PADDING + message.size() + LWS_SEND_BUFFER_POST_PADDING));
+    //* setup the buffer*/
+    memcpy (out + LWS_SEND_BUFFER_PRE_PADDING, message.c_str(), message.size());
+    //* write out*/
+    free (out);
+    // n = lws_write(wsi_in, out + LWS_SEND_BUFFER_PRE_PADDING, len, LWS_WRITE_TEXT);
+
+
     // if (message != "empty") {
     //     unsigned char *writable = (unsigned char *)malloc(sizeof(unsigned char) * (LWS_SEND_BUFFER_PRE_PADDING + message.size() + LWS_SEND_BUFFER_POST_PADDING));
     //     new unsigned char[LWS_SEND_BUFFER_PRE_PADDING + message.size() + LWS_SEND_BUFFER_POST_PADDING];
