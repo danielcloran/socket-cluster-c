@@ -356,7 +356,6 @@ static int ws_service_callback(struct lws *wsi, enum lws_callback_reasons reason
         }
     } break;
     case LWS_CALLBACK_CLIENT_WRITEABLE: {
-        std::cout << "Shipping it!" << std::endl;
         std::string message = message_queue->dequeue();
         if (message != "empty") {
             // unsigned char *writable = (unsigned char *)malloc(sizeof(unsigned char) * (LWS_SEND_BUFFER_PRE_PADDING + message.size() + LWS_SEND_BUFFER_POST_PADDING));
@@ -372,8 +371,8 @@ static int ws_service_callback(struct lws *wsi, enum lws_callback_reasons reason
             //     }
             // }
         }
-        lws_callback_on_writable(wsi);
-        usleep(10000);
+        // lws_callback_on_writable(wsi);
+        // usleep(10000);
     } break;
     default:
         break;
@@ -718,12 +717,12 @@ void socket_reset() {
     publishcallbacks   = _hashmap_new();
 }
 
-// void message_processing() {
-//     while (!destroy_flag) {
-//         message_queue->wait_until_value();
-//         lws_callback_on_writable(wsi);
-//     }
-// }
+void message_processing() {
+    while (!destroy_flag) {
+        message_queue->wait_until_value();
+        lws_callback_on_writable(wsi);
+    }
+}
 
 int socket_connect() {
     context = NULL;
@@ -781,8 +780,8 @@ int socket_connect() {
         lwsl_notice("[Main] wsi create error.\n");
         return 0;
     }
-    // message_thread = std::thread(&message_processing);
-    lws_callback_on_writable(wsi);
+    message_thread = std::thread(&message_processing);
+    // lws_callback_on_writable(wsi);
     lwsl_notice("[Main] wsi create success.\n");
 
     while (!destroy_flag) {
