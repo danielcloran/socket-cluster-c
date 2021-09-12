@@ -364,12 +364,12 @@ static int ws_service_callback(struct lws *wsi, enum lws_callback_reasons reason
             int publish_length = lws_write(wsi, writable + LWS_SEND_BUFFER_PRE_PADDING, message.size(), LWS_WRITE_TEXT);
             free(writable);
 
-            if (handshake_over_flag == 0) {
-                handshake_over_flag = 1;
-                if (s->handshake_over_callback != NULL) {
-                    s->handshake_over_callback();
-                }
-            }
+            // if (handshake_over_flag == 0) {
+            //     handshake_over_flag = 1;
+            //     if (s->handshake_over_callback != NULL) {
+            //         s->handshake_over_callback();
+            //     }
+            // }
         }
         // lws_callback_on_writable(wsi);
         // usleep(10000);
