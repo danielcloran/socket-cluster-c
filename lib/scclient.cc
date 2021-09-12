@@ -362,7 +362,7 @@ static int ws_service_callback(struct lws *wsi, enum lws_callback_reasons reason
         memcpy(out + LWS_SEND_BUFFER_PRE_PADDING, message.c_str(), message.size());
         //* write out*/
 
-        n = lws_write(wsi_in, out + LWS_SEND_BUFFER_PRE_PADDING, message.size(), LWS_WRITE_TEXT);
+        n = lws_write(wsi, out + LWS_SEND_BUFFER_PRE_PADDING, message.size(), LWS_WRITE_TEXT);
         free(out);
         // std::string message = message_queue->dequeue();
         // if (message != "empty") {
