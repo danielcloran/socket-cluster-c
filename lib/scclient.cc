@@ -581,7 +581,7 @@ void _publishobject(char *channelname, json_object *data) {
     json_object_object_add(jobj, "data", jobj1);
     json_object_object_add(jobj, "cid", cnt);
 
-    // websocket_write_back(wsi, (char *)json_object_to_json_string(jobj), -1);
+    websocket_write_back(wsi, (char *)json_object_to_json_string(jobj), -1);
     // pthread_t pid;
     // pthread_create(&pid, NULL, pthread_routine, (char *)json_object_to_json_string(jobj));
     // pthread_join(pid, NULL);
