@@ -733,7 +733,7 @@ void fake_write() {
     memcpy(out + LWS_SEND_BUFFER_PRE_PADDING, message.c_str(), message.size());
     //* write out*/
 
-    // n = lws_write(wsi_in, out + LWS_SEND_BUFFER_PRE_PADDING, message.size(), LWS_WRITE_TEXT);
+    lws_write(wsi, out + LWS_SEND_BUFFER_PRE_PADDING, message.size(), LWS_WRITE_TEXT);
     free(out);
 
     // if (message != "empty") {
