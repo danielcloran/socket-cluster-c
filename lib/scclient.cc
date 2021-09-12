@@ -383,7 +383,7 @@ static int ws_service_callback(struct lws *wsi, enum lws_callback_reasons reason
 
 static void *pthread_routine(void *data) {
     // websocket_write_back(wsi, (char *)data, -1);
-    return NULL;
+    // return NULL;
 }
 
 void _emit_int(char *event, int data) {
@@ -581,9 +581,10 @@ void _publishobject(char *channelname, json_object *data) {
     json_object_object_add(jobj, "data", jobj1);
     json_object_object_add(jobj, "cid", cnt);
 
-    pthread_t pid;
-    pthread_create(&pid, NULL, pthread_routine, (char *)json_object_to_json_string(jobj));
-    pthread_join(pid, NULL);
+    websocket_write_back(wsi, (char *)json_object_to_json_string(jobj), -1);
+    // pthread_t pid;
+    // pthread_create(&pid, NULL, pthread_routine, (char *)json_object_to_json_string(jobj));
+    // pthread_join(pid, NULL);
 
     json_object_put(jobj);
 }
