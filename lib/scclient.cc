@@ -153,7 +153,7 @@ struct socket {
 } * s;
 
 struct socket *Socket(char *protocol, char *address, int port, char *path, char *proxy_address, int proxy_port) {
-    message_queue = new SAFE_QUEUE::SafeQueue<std::string>();
+    message_queue    = new SAFE_QUEUE::SafeQueue<std::string>();
     s                = (struct socket *)malloc(sizeof(struct socket));
     s->id            = NULL;
     s->address       = address;
@@ -356,22 +356,21 @@ static int ws_service_callback(struct lws *wsi, enum lws_callback_reasons reason
         }
     } break;
     case LWS_CALLBACK_CLIENT_WRITEABLE: {
-        std::string message = message_queue->dequeue();
-        if (message != "empty") {
-            unsigned char *writable = (unsigned char *)malloc(sizeof(unsigned char) * (LWS_SEND_BUFFER_PRE_PADDING + LWS_SEND_BUFFER_POST_PADDING));
-            //unsigned char *writable = (unsigned char *)malloc(sizeof(unsigned char) * (LWS_SEND_BUFFER_PRE_PADDING + message.size() + LWS_SEND_BUFFER_POST_PADDING));
-            //new unsigned char[LWS_SEND_BUFFER_PRE_PADDING + message.size() + LWS_SEND_BUFFER_POST_PADDING];
-            //std::copy(message.begin(), message.end(), writable + LWS_SEND_BUFFER_PRE_PADDING);
-            int publish_length = lws_write(wsi, writable + LWS_SEND_BUFFER_PRE_PADDING, 0, LWS_WRITE_TEXT);
-            free(writable);
+        // std::string message = message_queue->dequeue();
+        // if (message != "empty") {
+        //     unsigned char *writable = (unsigned char *)malloc(sizeof(unsigned char) * (LWS_SEND_BUFFER_PRE_PADDING + message.size() + LWS_SEND_BUFFER_POST_PADDING));
+        //     new unsigned char[LWS_SEND_BUFFER_PRE_PADDING + message.size() + LWS_SEND_BUFFER_POST_PADDING];
+        //     std::copy(message.begin(), message.end(), writable + LWS_SEND_BUFFER_PRE_PADDING);
+        //     // int publish_length = lws_write(wsi, writable + LWS_SEND_BUFFER_PRE_PADDING, message.size(), LWS_WRITE_TEXT);
+        //     free(writable);
 
-            // if (handshake_over_flag == 0) {
-            //     handshake_over_flag = 1;
-            //     if (s->handshake_over_callback != NULL) {
-            //         s->handshake_over_callback();
-            //     }
-            // }
-        }
+        //     // if (handshake_over_flag == 0) {
+        //     //     handshake_over_flag = 1;
+        //     //     if (s->handshake_over_callback != NULL) {
+        //     //         s->handshake_over_callback();
+        //     //     }
+        //     // }
+        // }
         // lws_callback_on_writable(wsi);
         // usleep(10000);
     } break;
@@ -718,10 +717,22 @@ void socket_reset() {
     publishcallbacks   = _hashmap_new();
 }
 
+void fake_write() {
+    std::string message = message_queue->dequeue();
+    if (message != "empty") {
+        unsigned char *writable = (unsigned char *)malloc(sizeof(unsigned char) * (LWS_SEND_BUFFER_PRE_PADDING + message.size() + LWS_SEND_BUFFER_POST_PADDING));
+        new unsigned char[LWS_SEND_BUFFER_PRE_PADDING + message.size() + LWS_SEND_BUFFER_POST_PADDING];
+        std::copy(message.begin(), message.end(), writable + LWS_SEND_BUFFER_PRE_PADDING);
+        // int publish_length = lws_write(wsi, writable + LWS_SEND_BUFFER_PRE_PADDING, message.size(), LWS_WRITE_TEXT);
+        free(writable);
+    }
+}
+
 void message_processing() {
     while (!destroy_flag) {
         message_queue->wait_until_value();
-        lws_callback_on_writable(wsi);
+        fake_write();
+        // lws_callback_on_writable(wsi);
     }
 }
 
