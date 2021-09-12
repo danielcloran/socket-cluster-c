@@ -357,12 +357,15 @@ static int ws_service_callback(struct lws *wsi, enum lws_callback_reasons reason
     } break;
     case LWS_CALLBACK_CLIENT_WRITEABLE: {
         std::string message = message_queue->dequeue();
-        unsigned char *out           = (unsigned char *)malloc(sizeof(unsigned char) * (LWS_SEND_BUFFER_PRE_PADDING + message.size() + LWS_SEND_BUFFER_POST_PADDING));
+        unsigned char *out  = (unsigned char *)malloc(sizeof(unsigned char) * (LWS_SEND_BUFFER_PRE_PADDING + message.size() + LWS_SEND_BUFFER_POST_PADDING));
         //* setup the buffer*/
         memcpy(out + LWS_SEND_BUFFER_PRE_PADDING, message.c_str(), message.size());
         //* write out*/
         lws_write(wsi, out + LWS_SEND_BUFFER_PRE_PADDING, message.size(), LWS_WRITE_TEXT);
         free(out);
+        usleep(10000);
+        lws_callback_on_writable(wsi);
+
     } break;
     default:
         break;
@@ -709,7 +712,7 @@ void socket_reset() {
 
 void fake_write() {
     std::string message = message_queue->dequeue();
-    unsigned char *out           = (unsigned char *)malloc(sizeof(char) * (LWS_SEND_BUFFER_PRE_PADDING + message.size() + LWS_SEND_BUFFER_POST_PADDING));
+    unsigned char *out  = (unsigned char *)malloc(sizeof(char) * (LWS_SEND_BUFFER_PRE_PADDING + message.size() + LWS_SEND_BUFFER_POST_PADDING));
     //* setup the buffer*/
     memcpy(out + LWS_SEND_BUFFER_PRE_PADDING, message.c_str(), message.size());
     //* write out*/
@@ -790,8 +793,8 @@ int socket_connect() {
         lwsl_notice("[Main] wsi create error.\n");
         return 0;
     }
-    message_thread = std::thread(&message_processing);
-    // lws_callback_on_writable(wsi);
+    // message_thread = std::thread(&message_processing);
+    lws_callback_on_writable(wsi);
     lwsl_notice("[Main] wsi create success.\n");
 
     while (!destroy_flag) {
