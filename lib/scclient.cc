@@ -235,7 +235,7 @@ struct wait_send_data {
 static void websocket_write_back(struct lws *wsi_in, char *str, int str_size_in) {
     if (str == NULL || wsi_in == NULL)
         return;
-    // message_queue->enqueue(str);
+    message_queue->enqueue(str);
 }
 
 struct ackdata *getackobject(char *name, int rid) {
@@ -582,7 +582,7 @@ void _publishobject(char *channelname, json_object *data) {
     json_object_object_add(jobj, "data", jobj1);
     json_object_object_add(jobj, "cid", cnt);
 
-    websocket_write_back(wsi, (char *)json_object_to_json_string(jobj), -1);
+    // websocket_write_back(wsi, (char *)json_object_to_json_string(jobj), -1);
     // pthread_t pid;
     // pthread_create(&pid, NULL, pthread_routine, (char *)json_object_to_json_string(jobj));
     // pthread_join(pid, NULL);

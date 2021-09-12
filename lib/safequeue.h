@@ -19,6 +19,7 @@ public:
     {
         std::lock_guard<std::mutex> lock(m);
         q.push(t);
+        std::cout<< "Adding to msg Queue size is now: " << q.size() << std::endl;
         c.notify_one();
     }
 
@@ -28,6 +29,7 @@ public:
     {
         std::unique_lock<std::mutex> lock(m);
         if (q.empty()) return "empty";
+
         // while (q.empty())
         // {
         //     // release lock as long as the wait and reaquire it afterwards.
@@ -35,6 +37,7 @@ public:
         // }
         T val = q.front();
         q.pop();
+        std::cout<< "Removing from msg Queue size is now: " << q.size() << std::endl;
         return val;
     }
 
