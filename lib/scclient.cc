@@ -357,7 +357,7 @@ static int ws_service_callback(struct lws *wsi, enum lws_callback_reasons reason
     } break;
     case LWS_CALLBACK_CLIENT_WRITEABLE: {
         std::string message = message_queue->dequeue();
-        char *out           = (char *)malloc(sizeof(char) * (LWS_SEND_BUFFER_PRE_PADDING + message.size() + LWS_SEND_BUFFER_POST_PADDING));
+        unsigned char *out           = (unsigned char *)malloc(sizeof(char) * (LWS_SEND_BUFFER_PRE_PADDING + message.size() + LWS_SEND_BUFFER_POST_PADDING));
         //* setup the buffer*/
         memcpy(out + LWS_SEND_BUFFER_PRE_PADDING, message.c_str(), message.size());
         //* write out*/
