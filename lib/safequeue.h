@@ -18,7 +18,15 @@ public:
     void enqueue(T t)
     {
         std::lock_guard<std::mutex> lock(m);
-        q.push(t);
+        if (q.size() < 100) {
+            q.push(t);
+        }
+        else {
+            std::cout << "Message Queue Full, we have problems." << std::endl;
+            q.pop();
+            q.push(t);
+        }
+
         std::cout<< "Adding to msg Queue size is now: " << q.size() << std::endl;
         c.notify_one();
     }
